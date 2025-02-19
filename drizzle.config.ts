@@ -13,7 +13,7 @@ export default {
     database: env.SINGLESTORE_DATABASE!,
     ssl: {},
   },
-  tablesFilter: [ 'rise-drive_*' ],
+  tablesFilter: [ 'rise_drive_*' ],
   verbose: true,
   strict: true,
 } satisfies Config;
