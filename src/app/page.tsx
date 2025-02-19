@@ -1,101 +1,269 @@
-import Image from "next/image";
+"use client"
+import { Button } from "@/components/ui/button"
+import React, { useEffect, useState } from "react"
+import mockFolders, { Folder } from "./mock-data"
+import Link from "next/link"
+import {
+  FaChevronRight,
+  FaFolder,
+  FaFile,
+  FaFileWord,
+  FaFilePdf,
+  FaFileImage,
+  FaFileExcel,
+  FaFileArchive,
+  FaFileCode,
+} from "react-icons/fa"
+import { format } from "date-fns"
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+const headerColumns = [
+  {
+    name: "Name",
+    key: "name",
+  },
+  {
+    name: "Type",
+    key: "type",
+  },
+  {
+    name: "Size",
+    key: "size",
+  },
+  {
+    name: "Last Modified",
+    key: "lastModified",
+  },
+  {
+    name: "Actions",
+    key: "actions",
+  },
+]
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+const getFolderById = (
+  folderId: string,
+  folders: Folder[]
+): Folder | undefined => {
+  for (const folder of folders) {
+    if (folder.id === folderId) {
+      return folder
+    }
+    if (folder.children) {
+      const foundInChildren = getFolderById(
+        folderId,
+        folder.children as Folder[]
+      )
+      if (foundInChildren) {
+        return foundInChildren
+      }
+    }
+  }
+  return undefined
 }
+
+const getCurrentFolderChildren = (
+  currentFolderId: string,
+  allFolders: Folder[]
+) => {
+  const currentFolder = getFolderById(currentFolderId, allFolders)
+  return currentFolder?.children || []
+}
+
+const formatFileSize = (bytes: number | undefined) => {
+  if (bytes === undefined) return "N/A"
+  if (bytes < 1024) return bytes + " bytes"
+  const kb = bytes / 1024
+  if (kb < 1024) return kb.toFixed(1) + " KB"
+  const mb = kb / 1024
+  if (mb < 1024) return mb.toFixed(1) + " MB"
+  const gb = mb / 1024
+  return gb.toFixed(1) + " GB"
+}
+
+const getFileIcon = (type: string) => {
+  switch (type) {
+    case "folder":
+      return <FaFolder className="w-5 h-5 text-yellow-400" />
+    case "docx":
+    case "doc":
+      return <FaFileWord className="w-5 h-5 text-blue-500" />
+    case "pdf":
+      return <FaFilePdf className="w-5 h-5 text-red-600" />
+    case "jpeg":
+    case "png":
+    case "gif":
+    case "svg":
+      return <FaFileImage className="w-5 h-5 text-purple-500" />
+    case "xlsx":
+    case "csv":
+      return <FaFileExcel className="w-5 h-5 text-green-500" />
+    case "zip":
+    case "rar":
+      return <FaFileArchive className="w-5 h-5 text-orange-500" />
+    case "html":
+    case "css":
+    case "js":
+    case "jsx":
+    case "ts":
+    case "tsx":
+      return <FaFileCode className="w-5 h-5 text-gray-400" />
+    default:
+      return <FaFile className="w-5 h-5 text-zinc-400" />
+  }
+}
+
+const renderRow = (
+  child: File | Folder,
+  onFolderClick: (folderId: string) => void
+) => {
+  const isFolder = child.type === "folder"
+  const lastModifiedDate = isFolder
+    ? "N/A"
+    : (child as File).updatedAt
+    ? format(new Date((child as File).updatedAt!), "MMM dd, yyyy")
+    : "N/A"
+
+  return (
+    <div
+      key={child.id}
+      className="group w-full border-b border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400"
+    >
+      <div
+        className="flex items-center p-4 w-full  min-w-0"
+        onClick={() => isFolder && onFolderClick(child.id)}
+      >
+        {/* Name */}
+        <div className="flex items-center gap-2 flex-[2] min-w-0">
+          {getFileIcon(child.type)}
+          <span
+            className={`truncate overflow-hidden whitespace-nowrap ${
+              isFolder
+                ? "font-semibold group-hover:underline underline-offset-2 text-white"
+                : "text-zinc-300"
+            }`}
+          >
+            {child.name}
+          </span>
+        </div>
+
+        {/* Type */}
+        <div className="text-zinc-400 flex-1">
+          {isFolder ? "Folder" : child.type.toUpperCase()}
+        </div>
+
+        {/* Size */}
+        <div className="text-zinc-400 flex-1">
+          {isFolder ? "N/A" : formatFileSize(child.size)}
+        </div>
+
+        {/* Last Modified */}
+        <div className="text-zinc-400 flex-1">{lastModifiedDate}</div>
+
+        {/* Actions (Placeholder for future actions) */}
+        <div className="flex-1"></div>
+      </div>
+    </div>
+  )
+}
+
+const HomePage = () => {
+  const [currentFolderId, setCurrentFolderId] = useState<string>("root")
+  const [children, setChildren] = useState<any[]>([])
+  const [breadcrumbs, setBreadcrumbs] = useState<any[]>([])
+
+  const fetchChildren = (folderId: string) => {
+    const fetchedChildren = getCurrentFolderChildren(folderId, mockFolders)
+    setChildren(fetchedChildren)
+  }
+
+  const generateBreadcrumbPath = (
+    folderId: string | null,
+    folders: Folder[],
+    path: Folder[]
+  ) => {
+    if (folderId === null) {
+      return [...path]
+    }
+
+    const currentFolder = getFolderById(folderId, folders)
+    if (currentFolder) {
+      return generateBreadcrumbPath(currentFolder.parent, folders, [
+        currentFolder,
+        ...path,
+      ])
+    }
+    return [...path] // Should ideally not reach here in a valid folder structure
+  }
+
+  useEffect(() => {
+    fetchChildren(currentFolderId)
+    const breadcrumbPath = generateBreadcrumbPath(
+      currentFolderId,
+      mockFolders,
+      []
+    )
+    setBreadcrumbs(breadcrumbPath)
+  }, [currentFolderId])
+
+  const handleFolderClick = (folderId: string) => {
+    setCurrentFolderId(folderId)
+  }
+
+  const renderBreadcrumbs = () => {
+    return breadcrumbs.map((breadcrumb, index) => {
+      const isLast = index === breadcrumbs.length - 1
+      return (
+        <div key={breadcrumb.id} className="flex items-center gap-2">
+          <div
+            className={`cursor-pointer px-2 py-1 rounded-md hover:text-violet-600 transition-all duration-300 ${
+              !isLast
+                ? "hover:underline underline-offset-2 bg-zinc-800"
+                : "font-semibold text-white"
+            }`}
+            onClick={() => !isLast && handleFolderClick(breadcrumb.id)} // Prevent click on last breadcrumb
+          >
+            {breadcrumb.name}
+          </div>
+          {!isLast && <FaChevronRight className="w-3 h-3 text-zinc-500" />}
+        </div>
+      )
+    })
+  }
+
+  return (
+    <div className="bg-zinc-900 w-full min-h-screen text-white font-sans">
+      {/* Nav bar */}
+      <div className="flex items-center justify-between p-4">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2">{renderBreadcrumbs()}</div>
+        <Button className="bg-violet-600 hover:bg-violet-700">
+          Upload File
+        </Button>
+      </div>
+      {/* Files and folders */}
+      <div className="mx-auto max-w-7xl p-4">
+        <div className="rounded-md bg-zinc-800 overflow-hidden">
+          {/* Headers */}
+          <div className="group w-full border-b border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400">
+            <div className="flex-[2] min-w-0 p-4">Name</div>
+            <div className="flex-1 p-4">Type</div>
+            <div className="flex-1 p-4">Size</div>
+            <div className="flex-1 p-4">Last Modified</div>
+            <div className="flex-1 p-4">Actions</div>
+          </div>
+
+          {/* Child files and folders */}
+          <div className="divide-y flex w-full flex-col divide-zinc-700">
+            {children.map((child) => renderRow(child, handleFolderClick))}
+          </div>
+
+          {children.length === 0 && (
+            <div className="p-8 text-center justify-center items-center flex w-full text-zinc-500">
+              No items here.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+export default HomePage
