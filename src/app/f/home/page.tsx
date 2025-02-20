@@ -6,21 +6,30 @@ import {
 } from "@/server/db/schema"
 import { eq, isNull } from "drizzle-orm"
 import React from "react"
-
+import { getAllParents } from "../get-all-parent"
 const RootFolderPage = async () => {
   const rootFolderId = await getRootFolderId()
-  const folders = await db.select().from(foldersTable)
+  const foldersPromise = db.select().from(foldersTable)
 
-  const files = await db
+  const filesPromise = db
     .select()
     .from(filesTable)
     .where(eq(filesTable.parent, rootFolderId))
+
+  const parentsPromise = getAllParents(rootFolderId)
+
+  const [folders, files, parents] = await Promise.all([
+    foldersPromise,
+    filesPromise,
+    parentsPromise,
+  ])
 
   return (
     <div>
       <DriveContents
         folders={folders}
         files={files}
+        parents={parents}
         isLoading={false}
         error={null}
         currentFolderId={0}

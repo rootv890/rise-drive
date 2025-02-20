@@ -4,6 +4,13 @@
 - [ ] Change folders to link component
 - [] Consistent UI
 
+## TODO BACK IN HEAD (Silly but important)
+
+- [] Add Sorting Features
+- [] Add Search Features
+- [] Add Filter Features
+- [] Add Drag and Drop Features
+
 ## 20/02/2025
 
 - [x] Add a nice UI for the folder structure 🎨

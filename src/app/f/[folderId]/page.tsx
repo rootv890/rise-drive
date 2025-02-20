@@ -3,28 +3,10 @@ import React from "react"
 import {
   folders as foldersTable,
   files as filesTable,
-  DbFolder,
 } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import DriveContents from "@/app/drive-contents"
-
-async function getAllParents(folderId: number) {
-  const parents: DbFolder[] = []
-  let currentFolderId: number | null = folderId
-
-  while (currentFolderId !== null) {
-    // get the parent folder
-    const parentFolder = await db
-      .select()
-      .from(foldersTable)
-      .where(eq(foldersTable.id, currentFolderId))
-
-    parents.unshift(parentFolder[0])
-    currentFolderId = parentFolder[0].parent ?? null
-  }
-
-  return parents
-}
+import { getAllParents } from "../get-all-parent"
 
 const FolderPage = async ({
   params,
@@ -70,11 +52,6 @@ const FolderPage = async ({
     filesPromise,
     parentsPromise,
   ])
-
-  // console.log("Current Folder\n", currentFolder)
-  // console.log("Folders\n", folders)
-  // console.log("Files\n", files)
-  console.log("Parents\n", parents)
 
   return (
     <div>
