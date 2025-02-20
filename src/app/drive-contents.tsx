@@ -3,6 +3,8 @@ import React from "react"
 import { files_table, folders_table } from "@/server/db/schema"
 import RenderRow from "@/components/RenderRow"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { Button } from "@/components/ui/button"
+import { LiaUploadSolid } from "react-icons/lia"
 
 const DriveContents = (props: {
   folders: (typeof folders_table.$inferSelect)[]
@@ -11,13 +13,17 @@ const DriveContents = (props: {
   currentFolderId: number
 }) => {
   return (
-    <div className="bg-zinc-900 w-full min-h-screen text-white font-sans">
-      {/* Files and folders */}
+    <div className="w-screen min-h-screen  font-sans">
       <div className="mx-auto max-w-7xl p-4">
-        {/* Breadcrumb */}
-        <Breadcrumbs breadcrumbs={props.parents} />
-        <div className="rounded-md bg-zinc-800 overflow-hidden">
-          {/* Headers */}
+        <div className="flex justify-between items-center">
+          <Breadcrumbs breadcrumbs={props.parents} />
+          <div>
+            <Button className="bg-violet-600 hover:bg-violet-700">
+              <LiaUploadSolid className="w-auto h-12" /> Upload File
+            </Button>
+          </div>
+        </div>
+        <div className="rounded-lg bg-zinc-800 ">
           <div className="group w-full border-b font-semibold border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400">
             <div className="flex-[2] min-w-0 p-4">Name</div>
             <div className="flex-1 p-4">Type</div>

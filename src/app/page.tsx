@@ -5,7 +5,7 @@ import { FaCloud, FaLock, FaBolt, FaTerminal } from "react-icons/fa" // 🚀 Coo
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-b   dark:from-zinc-900 dark:  to-black text-white">
       {/* Hero Section 🦸‍♂️ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <motion.div

@@ -4,6 +4,9 @@ import React from "react"
 import { Button } from "./ui/button"
 import { LiaUploadSolid } from "react-icons/lia"
 import { Breadcrumbs } from "./breadcrumbs"
+import { UserButton } from "@clerk/nextjs"
+import { SignedIn, SignedOut } from "@clerk/nextjs"
+import { SignInButton } from "@clerk/nextjs"
 
 const DriveNavbar = () => {
   return (
@@ -24,9 +27,24 @@ const DriveNavbar = () => {
           <Breadcrumbs breadcrumbs={[]} />
         </div>
 
-        <Button className="bg-violet-600 hover:bg-violet-700" size="lg">
-          <LiaUploadSolid className="w-auto h-12" /> Upload File
-        </Button>
+        <div className="flex items-center gap-4">
+          <div>
+            <SignedIn>
+              <div className="text-white">
+                <UserButton />
+              </div>
+            </SignedIn>
+            <SignedOut>
+              <Button
+                variant="default"
+                size="lg"
+                className=" text-white px-4 py-2 rounded-md"
+              >
+                <SignInButton />
+              </Button>
+            </SignedOut>
+          </div>
+        </div>
       </div>
     </div>
   )
