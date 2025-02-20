@@ -2,10 +2,12 @@
 import React from "react"
 import { DbFolder, DbFile } from "@/server/db/schema"
 import RenderRow from "@/components/RenderRow"
+import { Breadcrumbs } from "@/components/breadcrumbs"
 
 const DriveContents = (props: {
   folders: DbFolder[]
   files: DbFile[]
+  parents: DbFolder[]
   isLoading: boolean
   error: Error | null
   currentFolderId: number
@@ -14,6 +16,9 @@ const DriveContents = (props: {
     <div className="bg-zinc-900 w-full min-h-screen text-white font-sans">
       {/* Files and folders */}
       <div className="mx-auto max-w-7xl p-4">
+        {/* Breadcrumb */}
+        <Breadcrumbs breadcrumbs={props.parents} />
+
         <div className="rounded-md bg-zinc-800 overflow-hidden">
           {/* Headers */}
           <div className="group w-full border-b font-semibold border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400">

@@ -3,9 +3,28 @@ import React from "react"
 import {
   folders as foldersTable,
   files as filesTable,
+  DbFolder,
 } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import DriveContents from "@/app/drive-contents"
+
+async function getAllParents(folderId: number) {
+  const parents: DbFolder[] = []
+  let currentFolderId: number | null = folderId
+
+  while (currentFolderId !== null) {
+    // get the parent folder
+    const parentFolder = await db
+      .select()
+      .from(foldersTable)
+      .where(eq(foldersTable.id, currentFolderId))
+
+    parents.unshift(parentFolder[0])
+    currentFolderId = parentFolder[0].parent ?? null
+  }
+
+  return parents
+}
 
 const FolderPage = async ({
   params,
@@ -33,20 +52,29 @@ const FolderPage = async ({
     .where(eq(foldersTable.id, parsedFolderId))
 
   // Children
-  const folders = await db
+  const foldersPromise = db
     .select()
     .from(foldersTable)
     .where(eq(foldersTable.parent, parsedFolderId))
 
   // Add files under the current folder
-  const files = await db
+  const filesPromise = db
     .select()
     .from(filesTable)
     .where(eq(filesTable.parent, parsedFolderId))
 
-  console.log("Current Folder\n", currentFolder)
-  console.log("Folders\n", folders)
-  console.log("Files\n", files)
+  const parentsPromise = getAllParents(parsedFolderId)
+
+  const [folders, files, parents] = await Promise.all([
+    foldersPromise,
+    filesPromise,
+    parentsPromise,
+  ])
+
+  // console.log("Current Folder\n", currentFolder)
+  // console.log("Folders\n", folders)
+  // console.log("Files\n", files)
+  console.log("Parents\n", parents)
 
   return (
     <div>
@@ -56,6 +84,7 @@ const FolderPage = async ({
         currentFolderId={parsedFolderId}
         files={files}
         folders={folders}
+        parents={parents}
         error={null}
         isLoading={false}
       />
