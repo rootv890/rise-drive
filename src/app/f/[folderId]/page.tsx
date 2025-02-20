@@ -1,6 +1,6 @@
 import React, { Suspense } from "react"
 import DriveContents from "@/app/drive-contents"
-import { getAllFiles, getAllFolders, getAllParents } from "@/server/db/queries"
+import { QUERIES } from "@/server/db/queries"
 
 interface FolderPageProps {
   params: Promise<{ folderId: string }>
@@ -18,9 +18,9 @@ const FolderPage = async ({ params }: FolderPageProps) => {
     )
   }
 
-  const foldersPromise = getAllFolders(parsedFolderId)
-  const filesPromise = getAllFiles(parsedFolderId)
-  const parentsPromise = getAllParents(parsedFolderId)
+  const foldersPromise = QUERIES.getAllFolders(parsedFolderId)
+  const filesPromise = QUERIES.getAllFiles(parsedFolderId)
+  const parentsPromise = QUERIES.getAllParents(parsedFolderId)
 
   const [folders, files, parents] = await Promise.all([
     foldersPromise,
