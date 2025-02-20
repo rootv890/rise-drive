@@ -39,3 +39,33 @@ export const QUERIES = {
     return rootFolder[ 0 ];
   },
 };
+
+
+export const Muatations = {
+  // Create a file in the database after uploading it to the uploadthing 🗣️ server!!!
+  createFile: async function ( input: {
+    file: {
+      name: string;
+      type: string;
+      url: string;
+      size: number;
+    };
+    parent: number;
+    userId: string;
+  } ) {
+    const { file, userId } = input;
+    const [ fileData ] = await db.insert( files_table ).values( {
+      ...file,
+      parent: input.parent ?? ( await QUERIES.getRootFolder() ).id, // Check if parent is given else set to root folder
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } ).$returningId();
+
+    return {
+      file: fileData,
+      error: null,
+      success: true,
+      userId,
+    };
+  },
+};

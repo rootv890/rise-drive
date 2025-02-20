@@ -1,4 +1,4 @@
-import DriveContents from "@/app/drive-contents"
+import ContentBrowser from "@/app/drive-contents"
 import { QUERIES } from "@/server/db/queries"
 
 const RootFolderPage = async () => {
@@ -14,7 +14,7 @@ const RootFolderPage = async () => {
   ])
   return (
     <div>
-      <DriveContents
+      <ContentBrowser
         folders={folders}
         files={files}
         parents={parents}

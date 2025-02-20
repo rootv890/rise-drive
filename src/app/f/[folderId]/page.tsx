@@ -1,5 +1,5 @@
 import React, { Suspense } from "react"
-import DriveContents from "@/app/drive-contents"
+import ContentBrowser from "@/app/drive-contents"
 import { QUERIES } from "@/server/db/queries"
 
 interface FolderPageProps {
@@ -31,7 +31,7 @@ const FolderPage = async ({ params }: FolderPageProps) => {
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <DriveContents
+        <ContentBrowser
           currentFolderId={parsedFolderId}
           files={files}
           folders={folders}

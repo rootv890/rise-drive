@@ -5,22 +5,32 @@ import RenderRow from "@/components/RenderRow"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Button } from "@/components/ui/button"
 import { LiaUploadSolid } from "react-icons/lia"
+import { UploadButton } from "@/components/uploadthing"
+import { useRouter } from "next/navigation"
 
-const DriveContents = (props: {
+const ContentBrowser = (props: {
   folders: (typeof folders_table.$inferSelect)[]
   files: (typeof files_table.$inferSelect)[]
   parents: (typeof folders_table.$inferSelect)[]
   currentFolderId: number
 }) => {
+  const router = useRouter()
   return (
-    <div className="w-screen min-h-screen  font-sans">
+    <div className="w-full min-h-screen  font-sans">
       <div className="mx-auto max-w-7xl p-4">
         <div className="flex justify-between items-center">
           <Breadcrumbs breadcrumbs={props.parents} />
           <div>
-            <Button className="bg-violet-600 hover:bg-violet-700">
+            {/* <Button className="bg-violet-600 hover:bg-violet-700">
               <LiaUploadSolid className="w-auto h-12" /> Upload File
-            </Button>
+            </Button> */}
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                console.log(res)
+                router.refresh() // to refresh the page after the upload is complete
+              }}
+            />
           </div>
         </div>
         <div className="rounded-lg bg-zinc-800 ">
@@ -53,4 +63,4 @@ const DriveContents = (props: {
     </div>
   )
 }
-export default DriveContents
+export default ContentBrowser
