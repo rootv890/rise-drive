@@ -1,9 +1,6 @@
 import { db } from "@/server/db"
 import React from "react"
-import {
-  folders as foldersTable,
-  files as filesTable,
-} from "@/server/db/schema"
+import { folders_table, files_table } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import DriveContents from "@/app/drive-contents"
 import { getAllParents } from "../get-all-parent"
@@ -30,20 +27,20 @@ const FolderPage = async ({
 
   const currentFolder = await db
     .select()
-    .from(foldersTable)
-    .where(eq(foldersTable.id, parsedFolderId))
+    .from(folders_table)
+    .where(eq(folders_table.id, parsedFolderId))
 
   // Children
   const foldersPromise = db
     .select()
-    .from(foldersTable)
-    .where(eq(foldersTable.parent, parsedFolderId))
+    .from(folders_table)
+    .where(eq(folders_table.parent, parsedFolderId))
 
   // Add files under the current folder
   const filesPromise = db
     .select()
-    .from(filesTable)
-    .where(eq(filesTable.parent, parsedFolderId))
+    .from(files_table)
+    .where(eq(files_table.parent, parsedFolderId))
 
   const parentsPromise = getAllParents(parsedFolderId)
 

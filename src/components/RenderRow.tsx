@@ -1,26 +1,29 @@
 import React from "react"
 import { FileIcon } from "@/components/file-icons"
-import { File as DbFile, Folder as DbFolder } from "@/server/db/schema"
+import { files_table, folders_table } from "@/server/db/schema"
 import { format } from "date-fns"
 import { formatFileSize } from "@/utils/utils"
 import Link from "next/link"
 
 interface RenderRowProps {
-  child: DbFile | DbFolder
+  child: typeof files_table | typeof folders_table
   href: string
 }
 
-const RenderRow: React.FC<RenderRowProps> = ({ child, href }) => {
-  const isFolder = child.type === "folder"
+const RenderRow: React.FC<RenderRowProps> = ({
+  child,
+  href,
+}: RenderRowProps) => {
+  const isFolder = child.type.toString() === "folder"
   const lastModifiedDate = isFolder
     ? "N/A"
-    : (child as DbFile).updatedAt
-    ? format(new Date((child as DbFile).updatedAt!), "MMM dd, yyyy")
+    : (child as typeof files_table).updatedAt
+    ? format(new Date(child.updatedAt.toString()), "MMM dd, yyyy")
     : "N/A"
 
   return (
     <div
-      key={child.id}
+      key={child.id.toString()}
       className="group w-full border-b border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400"
     >
       <Link href={href} className="flex items-center p-4 w-full  min-w-0">
@@ -34,18 +37,20 @@ const RenderRow: React.FC<RenderRowProps> = ({ child, href }) => {
                 : "text-zinc-300"
             }`}
           >
-            {child.name}
+            {child.name.toString()}
           </span>
         </div>
 
         {/* Type */}
         <div className="text-zinc-400 flex-1">
-          {isFolder ? "Folder" : child.type?.toUpperCase() || ""}
+          {isFolder ? "Folder" : child.type.toString()?.toUpperCase() || ""}
         </div>
 
         {/* Size */}
         <div className="text-zinc-400 flex-1">
-          {isFolder ? "N/A" : formatFileSize((child as DbFile).size || 0)}
+          {isFolder
+            ? "N/A"
+            : formatFileSize(Number((child as typeof files_table).size))}
         </div>
 
         {/* Last Modified */}

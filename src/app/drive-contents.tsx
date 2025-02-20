@@ -1,13 +1,13 @@
 "use client"
 import React from "react"
-import { DbFolder, DbFile } from "@/server/db/schema"
+import { files_table, folders_table } from "@/server/db/schema"
 import RenderRow from "@/components/RenderRow"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 
 const DriveContents = (props: {
-  folders: DbFolder[]
-  files: DbFile[]
-  parents: DbFolder[]
+  folders: (typeof folders_table.$inferSelect)[]
+  files: (typeof files_table.$inferSelect)[]
+  parents: (typeof folders_table.$inferSelect)[]
   isLoading: boolean
   error: Error | null
   currentFolderId: number
@@ -18,7 +18,6 @@ const DriveContents = (props: {
       <div className="mx-auto max-w-7xl p-4">
         {/* Breadcrumb */}
         <Breadcrumbs breadcrumbs={props.parents} />
-
         <div className="rounded-md bg-zinc-800 overflow-hidden">
           {/* Headers */}
           <div className="group w-full border-b font-semibold border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400">
@@ -31,12 +30,16 @@ const DriveContents = (props: {
 
           <div className="divide-y flex w-full flex-col divide-zinc-700">
             {props.files.map((file) => (
-              <RenderRow key={file.id} child={file} href={`/f/${file.id}`} />
+              <RenderRow
+                key={file.id.toString()}
+                child={file as unknown as typeof files_table}
+                href={`/f/${file.id}`}
+              />
             ))}
             {props.folders.map((folder) => (
               <RenderRow
                 key={folder.id}
-                child={folder}
+                child={folder as unknown as typeof folders_table}
                 href={`/f/${folder.id}`}
               />
             ))}

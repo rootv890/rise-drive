@@ -1,4 +1,4 @@
-import { folders as FolderType, files as FileType } from "@/server/db/schema";
+import { folders_table as FolderType, files_table as FileType } from "@/server/db/schema";
 
 export type Folder = typeof FolderType.$inferInsert;
 export type File = typeof FileType.$inferInsert;
