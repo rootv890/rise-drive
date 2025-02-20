@@ -8,8 +8,6 @@ const DriveContents = (props: {
   folders: (typeof folders_table.$inferSelect)[]
   files: (typeof files_table.$inferSelect)[]
   parents: (typeof folders_table.$inferSelect)[]
-  isLoading: boolean
-  error: Error | null
   currentFolderId: number
 }) => {
   return (
