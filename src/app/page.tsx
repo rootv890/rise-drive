@@ -1,118 +1,73 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import React, { useEffect, useState } from "react"
-import mockFolders, { Folder } from "./mock-data"
-import Link from "next/link"
-import {
-  FaChevronRight,
-  FaFolder,
-  FaFile,
-  FaFileWord,
-  FaFilePdf,
-  FaFileImage,
-  FaFileExcel,
-  FaFileArchive,
-  FaFileCode,
-} from "react-icons/fa"
+
+import { FaChevronRight } from "react-icons/fa"
+import { LiaUploadSolid } from "react-icons/lia"
 import { format } from "date-fns"
+import { folders as MockFolders, files as MockFiles } from "./mock-data"
+import { FileIcon } from "@/components/file-icons"
+import { File, Folder as DbFolder } from "@/server/db/schema"
+import { formatFileSize } from "@/utils/utils"
 
-const headerColumns = [
-  {
-    name: "Name",
-    key: "name",
-  },
-  {
-    name: "Type",
-    key: "type",
-  },
-  {
-    name: "Size",
-    key: "size",
-  },
-  {
-    name: "Last Modified",
-    key: "lastModified",
-  },
-  {
-    name: "Actions",
-    key: "actions",
-  },
-]
+function getBreadcrumbs(currentFolderId: string) {
+  /**
+   * Logic
+   * 1. Get the folder from the currentFolderId
+   * 2. Get the parent of the folder
+   * 3. Repeat until the parent is null
+   * 4. Return the breadcrumbs
+   */
+  const currentActiveFolder = MockFolders.find(
+    (folder) => folder.id === parseInt(currentFolderId)
+  )
 
-const getFolderById = (
-  folderId: string,
-  folders: Folder[]
-): Folder | undefined => {
-  for (const folder of folders) {
-    if (folder.id === folderId) {
-      return folder
-    }
-    if (folder.children) {
-      const foundInChildren = getFolderById(
-        folderId,
-        folder.children as Folder[]
-      )
-      if (foundInChildren) {
-        return foundInChildren
-      }
-    }
+  if (!currentActiveFolder) return []
+
+  // add the current folder to the breadcrumbs
+  let breadcrumbs: DbFolder[] = [currentActiveFolder]
+
+  function getParentFolder(folderId: number) {
+    const parentFolder = MockFolders.find((folder) => folder.id === folderId)
+    if (!parentFolder) return []
+    breadcrumbs.unshift(parentFolder) // add the parent folder to the breadcrumbs
+    getParentFolder(parentFolder.parent) // Recursively get the parent folder
   }
-  return undefined
+  getParentFolder(currentActiveFolder.parent)
+  return breadcrumbs
 }
 
-const getCurrentFolderChildren = (
-  currentFolderId: string,
-  allFolders: Folder[]
-) => {
-  const currentFolder = getFolderById(currentFolderId, allFolders)
-  return currentFolder?.children || []
-}
+function getChildrenFromCurrentFolder(currentFolder: number) {
+  const currentActiveFolder = MockFolders.find(
+    (folder) => folder.id === currentFolder
+  )
+  console.log("currentActiveFolder", currentActiveFolder)
 
-const formatFileSize = (bytes: number | undefined) => {
-  if (bytes === undefined) return "N/A"
-  if (bytes < 1024) return bytes + " bytes"
-  const kb = bytes / 1024
-  if (kb < 1024) return kb.toFixed(1) + " KB"
-  const mb = kb / 1024
-  if (mb < 1024) return mb.toFixed(1) + " MB"
-  const gb = mb / 1024
-  return gb.toFixed(1) + " GB"
-}
+  // Get the children where the file and folder parent id == current folderid
+  const currentActiveFolderChildrenFolder = MockFolders.filter(
+    (folder) => folder.parent === currentFolder
+  )
 
-const getFileIcon = (type: string) => {
-  switch (type) {
-    case "folder":
-      return <FaFolder className="w-5 h-5 text-yellow-400" />
-    case "docx":
-    case "doc":
-      return <FaFileWord className="w-5 h-5 text-blue-500" />
-    case "pdf":
-      return <FaFilePdf className="w-5 h-5 text-red-600" />
-    case "jpeg":
-    case "png":
-    case "gif":
-    case "svg":
-      return <FaFileImage className="w-5 h-5 text-purple-500" />
-    case "xlsx":
-    case "csv":
-      return <FaFileExcel className="w-5 h-5 text-green-500" />
-    case "zip":
-    case "rar":
-      return <FaFileArchive className="w-5 h-5 text-orange-500" />
-    case "html":
-    case "css":
-    case "js":
-    case "jsx":
-    case "ts":
-    case "tsx":
-      return <FaFileCode className="w-5 h-5 text-gray-400" />
-    default:
-      return <FaFile className="w-5 h-5 text-zinc-400" />
-  }
+  const currentActiveFolderChildrenFile = MockFiles.filter(
+    (file) => file.parent === currentFolder
+  )
+
+  console.log(
+    "currentActiveFolderChildrenFolder",
+    currentActiveFolderChildrenFolder
+  )
+  console.log(
+    "currentActiveFolderChildrenFile",
+    currentActiveFolderChildrenFile
+  )
+  return [
+    ...currentActiveFolderChildrenFolder,
+    ...currentActiveFolderChildrenFile,
+  ]
 }
 
 const renderRow = (
-  child: File | Folder,
+  child: File | DbFolder,
   onFolderClick: (folderId: string) => void
 ) => {
   const isFolder = child.type === "folder"
@@ -127,13 +82,14 @@ const renderRow = (
       key={child.id}
       className="group w-full border-b border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400"
     >
+      {" "}
       <div
         className="flex items-center p-4 w-full  min-w-0"
         onClick={() => isFolder && onFolderClick(child.id)}
       >
         {/* Name */}
         <div className="flex items-center gap-2 flex-[2] min-w-0">
-          {getFileIcon(child.type)}
+          <FileIcon type={child.type?.toString() || ""} />
           <span
             className={`truncate overflow-hidden whitespace-nowrap ${
               isFolder
@@ -152,7 +108,7 @@ const renderRow = (
 
         {/* Size */}
         <div className="text-zinc-400 flex-1">
-          {isFolder ? "N/A" : formatFileSize(child.size)}
+          {isFolder ? "N/A" : formatFileSize(child.size || 0)}
         </div>
 
         {/* Last Modified */}
@@ -165,16 +121,105 @@ const renderRow = (
   )
 }
 
-const HomePage = () => {
-  const [currentFolderId, setCurrentFolderId] = useState<string>("root")
-  const [children, setChildren] = useState<any[]>([])
-  const [breadcrumbs, setBreadcrumbs] = useState<any[]>([])
+const getRootFolderId = () => {
+  return MockFolders.find((folder) => folder.parent === null)?.id
+}
 
-  const fetchChildren = (folderId: string) => {
-    const fetchedChildren = getCurrentFolderChildren(folderId, mockFolders)
-    setChildren(fetchedChildren)
+const HomePage = () => {
+  const [currentFolderId, setCurrentFolderId] = useState<number>(
+    () => getRootFolderId() as number
+  ) // 1 === root
+  const [children, setChildren] = useState<unknown[]>([])
+  const [breadcrumbs, setBreadcrumbs] = useState<unknown[]>([])
+
+  useEffect(() => {
+    const children = getChildrenFromCurrentFolder(parseInt(currentFolderId))
+    console.log("children", children)
+
+    setChildren(children)
+  }, [currentFolderId])
+
+  // BreadCrumbs
+  useEffect(() => {
+    const breadcrumbs = getBreadcrumbs(currentFolderId)
+    console.log("breadcrumbs", breadcrumbs)
+    setBreadcrumbs(breadcrumbs)
+  }, [currentFolderId])
+
+  const handleFolderClick = (folderId: string) => {
+    console.log("CLICKED")
+    console.log("folderId", folderId)
+    setCurrentFolderId(folderId)
   }
 
+  const renderBreadcrumbs = () => {
+    return breadcrumbs.map((breadcrumb, index) => {
+      const isLast = index === breadcrumbs.length - 1
+      return (
+        <div key={breadcrumb.id} className="flex items-center gap-2">
+          <div
+            className={`cursor-pointer px-2 py-1 rounded-md hover:text-violet-600 transition-all duration-300 ${
+              !isLast
+                ? "hover:underline underline-offset-2 bg-zinc-800"
+                : "font-semibold text-white"
+            }`}
+            onClick={() => !isLast && handleFolderClick(breadcrumb.id)} // Prevent click on last breadcrumb
+          >
+            {breadcrumb.name}
+          </div>
+          {!isLast && <FaChevronRight className="w-3 h-3 text-zinc-500" />}
+        </div>
+      )
+    })
+  }
+  return (
+    <div className="bg-zinc-900 w-full min-h-screen text-white font-sans">
+      {/* Nav bar */}
+      <div className="flex items-center justify-between p-4">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2">{renderBreadcrumbs()}</div>
+        <Button className="bg-violet-600 hover:bg-violet-700">
+          <span className="flex items-center gap-2">
+            <LiaUploadSolid className="w-4 h-4" /> Upload File
+          </span>
+        </Button>
+      </div>
+      {/* Files and folders */}
+      <div className="mx-auto max-w-7xl p-4">
+        <div className="rounded-md bg-zinc-800 overflow-hidden">
+          {/* Headers */}
+          <div className="group w-full border-b font-semibold border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400">
+            <div className="flex-[2] min-w-0 p-4">Name</div>
+            <div className="flex-1 p-4">Type</div>
+            <div className="flex-1 p-4">Size</div>
+            <div className="flex-1 p-4">Last Modified</div>
+            <div className="flex-1 p-4">Actions</div>
+          </div>
+
+          {/* Child files and folders */}
+          <div className="divide-y flex w-full flex-col divide-zinc-700">
+            {children.map((child) =>
+              renderRow(child, (folderId) => {
+                handleFolderClick(folderId)
+              })
+            )}
+          </div>
+
+          {children.length === 0 && (
+            <div className="p-8 text-center justify-center items-center flex w-full text-zinc-500">
+              No items here.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+export default HomePage
+
+/**
+ * dump
+ *
   const generateBreadcrumbPath = (
     folderId: string | null,
     folders: Folder[],
@@ -228,42 +273,4 @@ const HomePage = () => {
       )
     })
   }
-
-  return (
-    <div className="bg-zinc-900 w-full min-h-screen text-white font-sans">
-      {/* Nav bar */}
-      <div className="flex items-center justify-between p-4">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2">{renderBreadcrumbs()}</div>
-        <Button className="bg-violet-600 hover:bg-violet-700">
-          Upload File
-        </Button>
-      </div>
-      {/* Files and folders */}
-      <div className="mx-auto max-w-7xl p-4">
-        <div className="rounded-md bg-zinc-800 overflow-hidden">
-          {/* Headers */}
-          <div className="group w-full border-b border-zinc-700 hover:bg-zinc-700 transition-colors duration-200 cursor-pointer px-1 flex text-zinc-400">
-            <div className="flex-[2] min-w-0 p-4">Name</div>
-            <div className="flex-1 p-4">Type</div>
-            <div className="flex-1 p-4">Size</div>
-            <div className="flex-1 p-4">Last Modified</div>
-            <div className="flex-1 p-4">Actions</div>
-          </div>
-
-          {/* Child files and folders */}
-          <div className="divide-y flex w-full flex-col divide-zinc-700">
-            {children.map((child) => renderRow(child, handleFolderClick))}
-          </div>
-
-          {children.length === 0 && (
-            <div className="p-8 text-center justify-center items-center flex w-full text-zinc-500">
-              No items here.
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-export default HomePage
+ */

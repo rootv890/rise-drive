@@ -1,6 +1,4 @@
-import { sql } from 'drizzle-orm';
-
-import { singlestoreTable, text, int, index, singlestoreTableCreator, bigint } from 'drizzle-orm/singlestore-core';
+import { text, index, singlestoreTableCreator, bigint, singlestoreEnum } from 'drizzle-orm/singlestore-core';
 
 
 export const createTable = singlestoreTableCreator( ( name ) => `rise_drive_${ name }` );
@@ -21,10 +19,15 @@ export const files = createTable( 'files_table', {
   ];
 } );
 
+// single store enum
+export const folderType = singlestoreEnum( 'folder_type', [ 'folder', 'system', 'user', 'shared' ] ).default( 'folder' );
+
 export const folders = createTable( 'folders_table', {
   id: bigint( 'id', { mode: 'number', unsigned: true } ).primaryKey().autoincrement(),
   name: text( 'name' ).notNull(),
   parent: bigint( 'parent', { mode: 'number', unsigned: true } ),
+  type: folderType,
+  url: text( 'url' ).notNull(), // For Easy Navigation
   createdAt: text( 'created_at' ),
   updatedAt: text( 'updated_at' ),
 }, ( tempTable ) => {
@@ -32,3 +35,7 @@ export const folders = createTable( 'folders_table', {
     index( 'parent_idx' ).on( tempTable.parent ),
   ];
 } );
+
+
+export type File = typeof files.$inferSelect;
+export type Folder = typeof folders.$inferSelect;
