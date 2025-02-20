@@ -39,5 +39,5 @@ export const folders = createTable( 'folders_table', {
 } );
 
 
-export type File = typeof files.$inferSelect;
-export type Folder = typeof folders.$inferSelect;
+export type DbFile = typeof files.$inferSelect;
+export type DbFolder = typeof folders.$inferSelect;
