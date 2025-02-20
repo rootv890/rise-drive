@@ -24,6 +24,9 @@
 - [x] Broke and fixed the breadcrumbs 🍞
 - [x] Dynamic breadcrumbs 🍞
 - [x] Cleanup all the queries 🧹
-- [x] Cleanup the queries under one Object QUERIES
-- [ ] Redirect the root it to /f/home
-- [ ]
+- [x] Cleanup the queries under one Object QUERIES 🧹
+- [x] Made Mutation object for all the queries 🧹
+- [x] Add Clerk Authentication 🔐
+- [x] Setup Basic Upload Feature using uploadthing 📤
+- [x] Add project title and icon metadata 📄
+- [x] Add simple temproary logo for the project 🖼️
