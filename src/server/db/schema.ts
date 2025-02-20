@@ -1,3 +1,5 @@
+
+
 import { text, index, singlestoreTableCreator, bigint, singlestoreEnum } from 'drizzle-orm/singlestore-core';
 
 
