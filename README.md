@@ -23,5 +23,7 @@
 - [x] Implement Dynamic Routing for folders 🔀
 - [x] Broke and fixed the breadcrumbs 🍞
 - [x] Dynamic breadcrumbs 🍞
+- [x] Cleanup all the queries 🧹
+- [x] Cleanup the queries under one Object QUERIES
 - [ ] Redirect the root it to /f/home
 - [ ]
