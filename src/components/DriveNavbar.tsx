@@ -1,26 +1,23 @@
-import Image from "next/image"
 import Link from "next/link"
 import React from "react"
 import { Button } from "./ui/button"
-import { LiaUploadSolid } from "react-icons/lia"
 import { Breadcrumbs } from "./breadcrumbs"
 import { UserButton } from "@clerk/nextjs"
 import { SignedIn, SignedOut } from "@clerk/nextjs"
 import { SignInButton } from "@clerk/nextjs"
+import Logo from "./logo"
 
 const DriveNavbar = () => {
   return (
     <div className="flex items-center w-full justify-between px-6 py-4 bg-zinc-900">
       <div className="flex w-full justify-between   items-center gap-2">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Image
-              className="invert"
-              src="/next.svg"
-              alt="logo"
-              width={64}
-              height={64}
-            />
+        <div className="flex items-center gap-4 select-none">
+          <Link
+            className="flex items-center gap-2 font-semibold tracking-tighter stroke-white fill-white"
+            href="/"
+          >
+            <Logo />
+            <p className="text-white text-2xl font-bold">Rise Drive</p>
           </Link>
 
           {/* Breadcrumbs */}

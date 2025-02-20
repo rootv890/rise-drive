@@ -1,9 +1,17 @@
 import React, { Suspense } from "react"
 import ContentBrowser from "@/app/drive-contents"
 import { QUERIES } from "@/server/db/queries"
+import { Metadata } from "next"
 
 interface FolderPageProps {
   params: Promise<{ folderId: string }>
+}
+
+export const metadata: Metadata = {
+  // Dynamic title
+  title: `Rise Drive - Folder`,
+  description:
+    "Rise Drive is a file storage system that allows you to store and share files with yourself or others",
 }
 
 const FolderPage = async ({ params }: FolderPageProps) => {
