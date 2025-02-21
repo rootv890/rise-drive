@@ -1,25 +1,28 @@
 import "server-only";
 import { db } from "@/server/db";
 import { folders_table, files_table } from "@/server/db/schema";
-import { and, eq, isNull } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
+
+// TODO NoW  : sorting based on id
 
 export const QUERIES = {
   // Get a folder by id
   getFolderById: function ( folderId: number ) {
-    return db.select().from( folders_table ).where( eq( folders_table.id, folderId ) );
+    return db.select().from( folders_table ).where( eq( folders_table.id, folderId ) ).orderBy( folders_table.id );
   },
   getFolderByName: function ( folderName: string ) {
-    return db.select().from( folders_table ).where( eq( folders_table.name, folderName ) );
+    return db.select().from( folders_table ).where( eq( folders_table.name, folderName ) ).orderBy( folders_table.id );
   },
 
   getAllFolders: function ( folderId: number ) {
     return db
       .select()
       .from( folders_table )
-      .where( eq( folders_table.parent, folderId ) );
+      .where( eq( folders_table.parent, folderId ) )
+      .orderBy( folders_table.id );
   },
   getAllFiles: function ( folderId: number ) {
-    return db.select().from( files_table ).where( eq( files_table.parent, folderId ) );
+    return db.select().from( files_table ).where( eq( files_table.parent, folderId ) ).orderBy( files_table.id );
   },
   getAllParents: async function ( folderId: number ) {
     const parents: ( typeof folders_table.$inferSelect )[] = [];
@@ -37,7 +40,8 @@ export const QUERIES = {
     const rootFolder = await db
       .select()
       .from( folders_table )
-      .where( isNull( folders_table.parent ) );
+      .where( isNull( folders_table.parent ) )
+      .orderBy( folders_table.id );
     if ( rootFolder.length === 0 ) {
       throw new Error( "Root folder not found" );
     }
