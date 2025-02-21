@@ -3,8 +3,7 @@ import React from "react"
 import { files_table, folders_table } from "@/server/db/schema"
 import RenderRow from "@/components/RenderRow"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { Button } from "@/components/ui/button"
-import { LiaUploadSolid } from "react-icons/lia"
+
 import { UploadButton } from "@/components/uploadthing"
 import { useRouter } from "next/navigation"
 
@@ -26,6 +25,7 @@ const ContentBrowser = (props: {
             </Button> */}
             <UploadButton
               endpoint="imageUploader"
+              input={{ folderId: props.currentFolderId }}
               onClientUploadComplete={(res) => {
                 console.log(res)
                 router.refresh() // to refresh the page after the upload is complete

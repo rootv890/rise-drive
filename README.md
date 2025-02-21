@@ -32,3 +32,7 @@
 - [x] Add simple temproary logo for the project 🖼️
 
 ## 21/02/2025
+
+- [x] Uploading files to parent folder 📤
+- [x] Added folderid input for uploadthing 📤
+- [x] Changed Schema + owner id for files and folders 📄

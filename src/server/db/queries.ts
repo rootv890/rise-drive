@@ -5,9 +5,13 @@ import { eq, isNull } from "drizzle-orm";
 
 export const QUERIES = {
   // Get a folder by id
-  getFolder: function ( folderId: number ) {
+  getFolderById: function ( folderId: number ) {
     return db.select().from( folders_table ).where( eq( folders_table.id, folderId ) );
   },
+  getFolderByName: function ( folderName: string ) {
+    return db.select().from( folders_table ).where( eq( folders_table.name, folderName ) );
+  },
+
   getAllFolders: function ( folderId: number ) {
     return db
       .select()
@@ -22,7 +26,7 @@ export const QUERIES = {
     let currentFolderId: number | null = folderId;
     while ( currentFolderId !== null ) {
       // get the parent folder
-      const parentFolder = await this.getFolder( currentFolderId );
+      const parentFolder = await this.getFolderById( currentFolderId );
       parents.unshift( parentFolder[ 0 ] );
       currentFolderId = parentFolder[ 0 ].parent ?? null;
     }
@@ -41,7 +45,7 @@ export const QUERIES = {
 };
 
 
-export const Muatations = {
+export const MUTATIONS = {
   // Create a file in the database after uploading it to the uploadthing 🗣️ server!!!
   createFile: async function ( input: {
     file: {
@@ -50,15 +54,17 @@ export const Muatations = {
       url: string;
       size: number;
     };
-    parent: number;
+    parentId: number;
     userId: string;
   } ) {
-    const { file, userId } = input;
+    const { file, userId, parentId } = input;
     const [ fileData ] = await db.insert( files_table ).values( {
-      ...file,
-      parent: input.parent ?? ( await QUERIES.getRootFolder() ).id, // Check if parent is given else set to root folder
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      name: file.name,
+      type: file.type,
+      url: file.url,
+      size: file.size,
+      parent: parentId ?? ( await QUERIES.getRootFolder() ).id,
+      owner: userId,
     } ).$returningId();
 
     return {
