@@ -47,7 +47,10 @@ const ContentBrowser = (props: {
               <RenderRow
                 key={file.id.toString()}
                 child={file as unknown as typeof files_table}
-                href={`/f/${file.id}`}
+                href={
+                  // iF Folder
+                  file.type === "folder" ? `/f/${file.id}` : `${file.url}`
+                }
               />
             ))}
             {props.folders.map((folder) => (

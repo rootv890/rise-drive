@@ -31,7 +31,7 @@ export const QUERIES = {
       // get the parent folder
       const parentFolder = await this.getFolderById( currentFolderId );
       parents.unshift( parentFolder[ 0 ] );
-      currentFolderId = parentFolder[ 0 ].parent ?? null;
+      currentFolderId = parentFolder[ 0 ]?.parent ?? null;
     }
     return parents;
   },

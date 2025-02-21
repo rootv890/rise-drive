@@ -38,3 +38,9 @@
 - [x] Changed Schema + owner id for files and folders 📄
 - [x] Added Posthog Analytics 📈
 - [x] PostHog Rewrite Config for Next.js 📄
+- [x] Delete File
+- [ ] Delete Folders and Subfodlers
+
+## For me
+
+- Deleting folders Recursively and files under it is working or not, not sure check when your mind is clear!!!

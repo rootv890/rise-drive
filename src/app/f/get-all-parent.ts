@@ -10,7 +10,7 @@ export async function getAllParents ( folderId: number ) {
     const parentFolder = await getFolder( currentFolderId );
 
     parents.unshift( parentFolder[ 0 ] );
-    currentFolderId = parentFolder[ 0 ].parent ?? null;
+    currentFolderId = parentFolder[ 0 ]?.parent ?? null;
   }
 
   return parents;
