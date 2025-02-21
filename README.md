@@ -30,3 +30,5 @@
 - [x] Setup Basic Upload Feature using uploadthing 📤
 - [x] Add project title and icon metadata 📄
 - [x] Add simple temproary logo for the project 🖼️
+
+## 21/02/2025
