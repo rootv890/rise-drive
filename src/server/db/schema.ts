@@ -8,6 +8,7 @@ export const files_table = createTable( 'files_table', {
   type: text( 'type' ).notNull(),
   url: text( 'url' ).notNull(),
   parent: bigint( 'parent', { mode: 'number', unsigned: true } ).notNull(),
+  fileKey: text( 'file_key' ).notNull(), // uploadthing file key
   owner: text( 'owner' ).notNull(),
   size: bigint( 'size', { mode: 'number', unsigned: true } ).notNull(),
   createdAt: timestamp( 'created_at' ).defaultNow(),

@@ -59,18 +59,22 @@ export const MUTATIONS = {
       url: string;
       size: number;
     };
+    fileKey: string;
     parentId: number;
     userId: string;
   } ) {
-    const { file, userId, parentId } = input;
+    const { file, userId, parentId, fileKey } = input;
     const [ fileData ] = await db.insert( files_table ).values( {
       name: file.name,
       type: file.type,
-      url: file.url,
+      url: file.url ?? "",
+      fileKey: fileKey || "randomShitForTesting",
       size: file.size,
       parent: parentId ?? ( await QUERIES.getRootFolder() ).id,
       owner: userId,
     } ).$returningId();
+
+    console.log( "File created", fileData );
 
     return {
       file: fileData,
