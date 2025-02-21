@@ -36,3 +36,4 @@
 - [x] Uploading files to parent folder 📤
 - [x] Added folderid input for uploadthing 📤
 - [x] Changed Schema + owner id for files and folders 📄
+- [x] Added Posthog Analytics 📈

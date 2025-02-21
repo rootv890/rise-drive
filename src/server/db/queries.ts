@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/server/db";
 import { folders_table, files_table } from "@/server/db/schema";
-import { eq, isNull } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 export const QUERIES = {
   // Get a folder by id
@@ -32,7 +32,8 @@ export const QUERIES = {
     }
     return parents;
   },
-  getRootFolder: async function () {
+  getRootFolder: async function ( /* userId: string */ ) {
+    // TODO : get the root folder from the database using user id
     const rootFolder = await db
       .select()
       .from( folders_table )

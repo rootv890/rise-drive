@@ -24,7 +24,7 @@ const ContentBrowser = (props: {
               <LiaUploadSolid className="w-auto h-12" /> Upload File
             </Button> */}
             <UploadButton
-              endpoint="imageUploader"
+              endpoint="driveUploader"
               input={{ folderId: props.currentFolderId }}
               onClientUploadComplete={(res) => {
                 console.log(res)

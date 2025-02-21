@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/singlestore';
-import { env } from '@/env.mjs';
+import { env } from '@/env';
 import { createPool, type Pool } from 'mysql2/promise';
 
 const globalForDB = globalThis as unknown as {

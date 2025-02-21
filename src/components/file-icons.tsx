@@ -60,9 +60,54 @@ export function FileIcon({ type, className = "" }: FileIconProps) {
 
     // 👨‍💻 Code files
     if (
-      ["js", "ts", "jsx", "tsx", "py", "java", "cpp", "html", "css"].includes(
-        lowerType
-      )
+      [
+        "js",
+        "ts",
+        "jsx",
+        "tsx",
+        "py",
+        "java",
+        "cpp",
+        "html",
+        "css",
+        "json",
+        "txt",
+        "md",
+        "csv",
+        "xml",
+        "yaml",
+        "yml",
+        "toml",
+        "ini",
+        "cfg",
+        "conf",
+        "log",
+        "sql",
+        "php",
+        "ruby",
+        "swift",
+        "kotlin",
+        "go",
+        "rust",
+        "scala",
+        "haskell",
+        "erlang",
+        "elixir",
+        "dart",
+        "typescript",
+        "javascript",
+        "python",
+        "java",
+        "cpp",
+        "html",
+        "css",
+        "bash",
+        "zsh",
+        "sh",
+        "bat",
+        "cmd",
+        "ps[1-5]",
+      ].includes(lowerType)
     ) {
       return <FaFileCode className={`w-5 h-5 text-cyan-400 ${className}`} />
     }
