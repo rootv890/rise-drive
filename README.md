@@ -37,3 +37,4 @@
 - [x] Added folderid input for uploadthing 📤
 - [x] Changed Schema + owner id for files and folders 📄
 - [x] Added Posthog Analytics 📈
+- [x] PostHog Rewrite Config for Next.js 📄
